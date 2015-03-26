@@ -512,14 +512,24 @@ public class ResourceUtil {
                 continue;
             }
 
+
+			log.info("swagger 1.1 doc path : " + api11Path + "\n\n");
+
+			log.info("swagger 1.1 doc json : " + apiDoc11.toJSONString() + "\n\n");
+			log.info("Resource path : " + docResourcePath);
             Resource resource = registry.get(docResourcePath);
             JSONObject apiDoc =
                     (JSONObject) parser.parse(new String((byte[]) resource.getContent()));
+
+			log.info("API doc json : " + apiDoc.toJSONString() + "\n\n");
 
             Map<String, JSONArray> allParameters12 = ResourceUtil.getAllParametersForResources12(apiDoc);
 
             String updatedJson =
                     ResourceUtil.getUpdatedSwagger11Resource(apiDoc11, allParameters12);
+
+			log.info("updated json 1.2 : " + updatedJson + "\n\n");
+
             Resource res = registry.get(api11Path);
             res.setContent(updatedJson);
             //update the registry
