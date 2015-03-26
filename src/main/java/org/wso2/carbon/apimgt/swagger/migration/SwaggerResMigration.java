@@ -1,7 +1,5 @@
 package org.wso2.carbon.apimgt.swagger.migration;
 
-import java.util.Arrays;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.parser.ParseException;
@@ -11,6 +9,7 @@ import org.wso2.carbon.apimgt.api.model.APIIdentifier;
 import org.wso2.carbon.apimgt.impl.APIConstants;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.swagger.migration.internal.ServiceHolder;
+import org.wso2.carbon.apimgt.swagger.migration.utils.Constants;
 import org.wso2.carbon.apimgt.swagger.migration.utils.ResourceUtil;
 import org.wso2.carbon.apimgt.swagger.migration.utils.SwaggerResourceCreator;
 import org.wso2.carbon.base.MultitenantConstants;
@@ -25,6 +24,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.api.Tenant;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+
+import java.util.Arrays;
 
 
 
@@ -103,7 +104,7 @@ public class SwaggerResMigration {
                         String swagger12location = ResourceUtil.getSwagger12ResourceLocation(apiIdentifier.getApiName(),
                                 apiIdentifier.getVersion(), apiIdentifier.getProviderName());
 
-                        if (!registry.resourceExists(swagger12location)) {  // Swagger 1.2 resource does not exist so create it
+                        if (!registry.resourceExists(swagger12location) || !registry.resourceExists(swagger12location + "/" + Constants.API_DOC_12_ALL_RESOURCES_DOC)) {  // Swagger 1.2 resource does not exist so create it
                             log.info("Creating 1.2 swagger resource");
 
                             SwaggerResourceCreator.createSwagger12Resources(artifact, registry, api, tenant);
