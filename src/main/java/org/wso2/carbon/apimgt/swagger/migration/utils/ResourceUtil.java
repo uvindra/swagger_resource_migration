@@ -549,48 +549,72 @@ public class ResourceUtil {
     public static String getUpdatedSwagger11Resource(JSONObject resource,
                                                      Map<String, JSONArray> allParameters12) {
 
+		log.info("===================== getUpdatedSwagger11Resource =========================");
+
         String resourcePath = (String) resource.get(Constants.API_DOC_11_RESOURCE_PATH);
         String apiVersion = (String) resource.get(Constants.API_DOC_11_API_VERSION);
         String resourcePathPrefix = resourcePath + "/" + apiVersion;
 
+		log.info("resourcePath for 1.1 : " + resourcePath);
+		log.info("apiVersion : " + apiVersion);
+		log.info("resourcePathPrefix : " + resourcePathPrefix);
+
+
         JSONArray apis = (JSONArray) resource.get(Constants.API_DOC_11_APIS);
         for (Object api : apis) {
             JSONObject apiInfo = (JSONObject) api;
+			log.info("\n\napiInfo : " + apiInfo.toJSONString());
+
             String path = (String) apiInfo.get(Constants.API_DOC_11_PATH);
             path = path.substring(resourcePathPrefix.length());
             JSONArray operations = (JSONArray) apiInfo.get(Constants.API_DOC_11_OPERATIONS);
 
+			log.info("\n\noperations : " + operations.toJSONString());
+
             for (Object operation1 : operations) {
                 JSONObject operation = (JSONObject) operation1;
+				log.info("\n\noperation : " + operation);
                 String method = (String) operation.get(Constants.API_DOC_11_METHOD);
 
                 String key = path + "_" + method.toLowerCase();
 
+				log.info("\nkey : " + key);
+
                 //if there are parameters already in this
                 JSONArray existingParams = (JSONArray) operation.get(Constants.API_DOC_11_PARAMETERS);
+
+				log.info("\nexistingParams : " + existingParams);
                 //maintain the list of original parameters to avoid duplicates
                 JSONArray originalParams = existingParams;
 
                 JSONArray parameters;
                 if (allParameters12.containsKey(key)) {
+					log.info("\nallParameters12.containsKey(key) : " + key);
                     parameters = allParameters12.get(key);
+					log.info("\nparameters : " + parameters.toJSONString());
 
                     //setting the 'type' to 'string' if this variable is missing
                     for (int m = 0; m < parameters.size(); m++) {
                         JSONObject para = (JSONObject) parameters.get(m);
+						log.info("\n\npara : " + para.toJSONString());
                         if (noSuchParameter(originalParams, (String) para.get(Constants.API_DOC_11_PARAM_NAME), (String) para.get(Constants.API_DOC_11_PARAM_TYPE))) {
+							log.info("\nnoSuchParameter");
                             String dataType = "";
                             if (para.containsKey(Constants.API_DOC_12_DATA_TYPE)) {
+								log.info("\npara.containsKey(Constants.API_DOC_12_DATA_TYPE)");
                                 dataType = (String) para.get(Constants.API_DOC_12_DATA_TYPE);
                             }
-                            para.put(Constants.API_DOC_11_DATA_TYPE, dataType);
+
+							log.info("\ndataType : " + dataType);
+							para.put(Constants.API_DOC_11_DATA_TYPE, dataType);
                             para.remove(Constants.API_DOC_12_DATA_TYPE);
                             existingParams.add(existingParams.size(), para);
                         }
                     }
                 }
 
-                operation.put(Constants.API_DOC_12_PARAMETERS, existingParams);
+				log.info("\nexistingParams after loop : " + existingParams);
+				operation.put(Constants.API_DOC_12_PARAMETERS, existingParams);
             }
         }
 
@@ -610,9 +634,11 @@ public class ResourceUtil {
     public static Map<String, JSONArray> getAllParametersForResources12(JSONObject resource) {
         Map<String, JSONArray> parameters = new HashMap<String, JSONArray>();
 
+		log.info("\ngetAllParametersForResources12");
         String key;
 
         JSONArray apis = (JSONArray) resource.get(Constants.API_DOC_12_APIS);
+		log.info("\napis : " + apis.toJSONString());
         for (Object api : apis) {
 
             JSONObject apiInfo = (JSONObject) api;
@@ -633,7 +659,10 @@ public class ResourceUtil {
                 }
                 key = keyPrefix + "_" + httpMethod.toLowerCase();
 
-                parameters.put(key, parameterArray);
+				log.info("\nkey : " + key);
+				log.info("\nparameterArray : " + parameterArray.toJSONString());
+
+				parameters.put(key, parameterArray);
             }
         }
 
